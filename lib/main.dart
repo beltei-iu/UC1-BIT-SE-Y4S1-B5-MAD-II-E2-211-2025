@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mad_2_211/screens/home_screen.dart';
 import 'package:mad_2_211/screens/login_screen.dart';
+import 'package:mad_2_211/screens/otp_screen.dart';
 
 void main() {
 
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: LoginScreen(),
+      home: OtpScreen(),
     );
   }
 }

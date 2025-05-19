@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
+import 'package:mad_2_211/widgets/logo_widget.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -33,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   Widget get _body {
       return Padding(padding: EdgeInsets.only(left: 16, right: 16, top: 16),
         child: Column(
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Expanded(child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _logo,
+                LogoWidget(),
                 
               ],
             )),
@@ -63,10 +63,6 @@ const SizedBox(height: 20),
           ],
         ),
       );
-  }
-
-  Widget get _logo {
-    return Image.asset('assets/images/logo.png');
   }
 
 Widget get _username {
@@ -101,7 +97,7 @@ Widget get _password {
 }
 
   Widget get _loginButton {
-    return Container(
+    return SizedBox(
       height: 40,
       width: MediaQuery.of(context).size.width * 0.8,
       child: ElevatedButton(
@@ -130,9 +126,7 @@ Widget get _password {
 
       final route = MaterialPageRoute(builder: (context) => const MainScreen());
       Navigator.pushReplacement(context, route);
-
   }
-
 
   Widget get _forgotPassword {
     return Row(
