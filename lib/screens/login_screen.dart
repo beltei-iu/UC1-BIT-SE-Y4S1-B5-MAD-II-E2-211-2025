@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:mad_2_211/route/app_route.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
 
@@ -14,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
 
   bool _isObscure = true;
+  bool _isValidEmail = false;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -28,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   PreferredSizeWidget get _appBar {
     return AppBar(
-      title: const Text('Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+      //title: const Text('Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
       centerTitle: true,
       backgroundColor: Colors.white,
     );
@@ -50,15 +52,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 _username,
                 const SizedBox(height: 20),
                 _password,
-                                const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 _forgotPassword,
             const SizedBox(height: 40),
             _loginButton,
             const SizedBox(height: 40),
- const Text('Or login with'),
+              const Text('Or login with'),
             _socialLogin,
-const SizedBox(height: 20),
+              const SizedBox(height: 20),
             _register
           ],
         ),
@@ -68,10 +70,21 @@ const SizedBox(height: 20),
 Widget get _username {
   return TextField(
     controller: _usernameController,
+    onChanged: (value){
+      print("Value $value");
+      if(value.contains("@")){
+        setState(() {
+          _isValidEmail = true;
+        });
+      }
+    },
     decoration: InputDecoration(
       prefix: Icon(Icons.person),
-      labelText: 'Username',
-      border: OutlineInputBorder(),
+      suffix: _isValidEmail ? Icon(Icons.check_circle, color: Colors.green,) : Icon(Icons.check_circle),
+      labelText: 'Email',
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10)
+      ),
     ),
   );
 }
@@ -83,7 +96,9 @@ Widget get _password {
     decoration: InputDecoration(
       prefix: Icon(Icons.lock),
       labelText: 'Password',
-      border: OutlineInputBorder(),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10)
+      ),
       suffixIcon: IconButton(
         icon: Icon(Icons.visibility),
         onPressed: () {
@@ -118,14 +133,39 @@ Widget get _password {
 
 
   void _login(){
+
+      // email : mad@gmail.com
+      // pass  : 123456 
       String username = _usernameController.text;
       String password = _passwordController.text;
 
       print('Username: $username');
       print('Password: $password');
 
-      final route = MaterialPageRoute(builder: (context) => const MainScreen());
-      Navigator.pushReplacement(context, route);
+      if(username.isEmpty){
+          final alertDialog = AlertDialog(
+              title: Icon(Icons.error, color: Colors.red,size: 80,),
+              content: Text("Email is invalid"),
+          );
+          showDialog(context: context, builder: (context) => alertDialog);
+      }else if(password.isEmpty){
+          final alertDialog = AlertDialog(
+              title: Icon(Icons.error, color: Colors.red,size: 80,),
+              content: Text("Password is invalid"),
+          );
+          showDialog(context: context, builder: (context) => alertDialog);
+      }else {
+          // Call to Server
+          if(username == "mad@gmail.com" && password == "123456"){
+                AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+          }else{
+             final alertDialog = AlertDialog(
+              title: Icon(Icons.error, color: Colors.red,size: 80,),
+              content: Text("Wrong email and password"),
+            );
+            showDialog(context: context, builder: (context) => alertDialog);
+          }
+      }
   }
 
   Widget get _forgotPassword {
@@ -134,7 +174,7 @@ Widget get _password {
       children: [
         TextButton(
       onPressed: () {
-
+        AppRoute.key.currentState?.pushNamed(AppRoute.phoneScreen);
       },
       child: const Text('Forgot Password?', style: TextStyle(color: Colors.red),),
     )
@@ -169,7 +209,7 @@ Widget get _password {
         const Text('Don\'t have an account?'),
         TextButton(
           onPressed: () {
-            // Navigate to register screen
+            AppRoute.key.currentState?.pushNamed(AppRoute.registerScreen);
           },
           child: const Text('Register', style: TextStyle(color: Colors.red),),
         )

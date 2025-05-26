@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:mad_2_211/screens/custom_search_delegate.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 2,
         backgroundColor: Colors.white,
         centerTitle: false,
         leading: Icon(
@@ -22,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(
           "Hi, Chivon",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         actions: [
           Icon(
@@ -32,9 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: 20,
           ),
-          Icon(
+          GestureDetector(
+            onTap: (){
+              showSearch(context: context, delegate: CustomSearchDelegate());
+            },
+            child: Icon(
             Icons.search,
             color: Colors.black,
+          ),
           ),
           SizedBox(
             width: 20,

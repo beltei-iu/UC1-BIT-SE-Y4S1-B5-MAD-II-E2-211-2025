@@ -47,18 +47,19 @@ class _MainScreenState extends State<MainScreen> {
   Widget get _bottomNavBar {
 
     final bottonNavBarItems = [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-      BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favorite"),
-      BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Cart"),
-      BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
+      BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.red,), label: "Home"),
+      BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.red), label: "Favorite"),
+      BottomNavigationBarItem(icon: Icon(Icons.shopping_cart, color: Colors.red), label: "Cart"),
+      BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.red), label: "Account"),
     ];
 
     return BottomNavigationBar(
+      elevation: 2.5,
       items: bottonNavBarItems,
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
       backgroundColor: Colors.white,
-      selectedItemColor: Colors.black,
+      selectedItemColor: Colors.red,
       unselectedItemColor: Colors.grey,
       showSelectedLabels: true,
       showUnselectedLabels: true,

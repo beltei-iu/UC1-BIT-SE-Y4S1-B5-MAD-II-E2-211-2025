@@ -12,6 +12,13 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 2,
+      ),
+      body: Center(
+        child: Text("Register"),
+      ),
+    );
   }
 }
