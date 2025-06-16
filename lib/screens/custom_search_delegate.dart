@@ -43,6 +43,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+
     List<String> suggestionList =
         query.isEmpty
             ? searchTerms

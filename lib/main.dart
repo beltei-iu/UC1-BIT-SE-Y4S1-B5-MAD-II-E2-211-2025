@@ -8,10 +8,29 @@ import 'package:mad_2_211/screens/home_screen.dart';
 import 'package:mad_2_211/screens/login_screen.dart';
 import 'package:mad_2_211/screens/otp_screen.dart';
 import 'package:mad_2_211/screens/splash_screen.dart';
+import 'package:mad_2_211/model/category.dart';
+import 'package:mad_2_211/services/category_service.dart';
 
-void main() {
+import 'data/db_manager.dart';
+
+void main() async{
   // This is the entry point of the application.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Init DB
+  await DbManager.instance?.database;
+
+  // Insert Data
+  // List<String> categoryItems = ["Electronics","Toys","Clothes","Shoes","Books"];
+  final categoryService = CategoryService();
+  // for (var item in categoryItems) {
+  //   final category = Category(name: item, nameKm: item);
+  //   categoryService.insertCategory(category);
+  // }
+
+  // Read Data
+  List<Category> categories = await categoryService.retrieveCategory();
+  print("Categories: $categories");
 
   final app = App();
   runApp(app);

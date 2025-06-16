@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/screens/custom_search_delegate.dart';
+import 'package:mad_2_211/services/category_service.dart';
 import 'package:mad_2_211/services/order_service.dart';
 import 'package:badges/badges.dart' as badges;
+
+import '../model/category.dart' show Category;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,11 +17,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String fullName = "Guest";
   int _totalOrder = 0;
+  List<Category> categories = [];
 
   void initState() {
     super.initState();
     _fetchFullName();
     _loadOrder();
+    _loadCategoryMenu();
+  }
+
+
+  Future<void> _loadCategoryMenu() async {
+    final categoryService = CategoryService();
+    List<Category> categoryList = await categoryService.retrieveCategory();
+    setState(() {
+      categories = categoryList;
+    });
   }
 
   Future<void> _loadOrder() async {
@@ -78,7 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         children: [
           _exploredWidget,
-          _slideWidget,
+          _buildMenu,
+          // _slideWidget,
           _topProductsWidget,
           _topProductsListWidget,
         ],
@@ -100,6 +115,33 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget get _buildMenu {
+
+    List<Widget> menuList = categories.map((i)  {
+      return TextButton(onPressed: (){}, child: Text("${i.name}"));
+    }).toList();
+
+    // Option1
+    Widget option1 = SizedBox(
+      height: 50,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: menuList,
+      ),
+    );
+
+    // Option2
+    Widget option2 = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: menuList,
+      ),
+    );
+
+    return option2;
+  }
+
 
   Widget get _slideWidget {
     return Padding(
@@ -182,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
+
                               OrderService.order(index, 1, 12, 10);
                               final alert = AlertDialog(
                                 title: Text("Order Placed"),

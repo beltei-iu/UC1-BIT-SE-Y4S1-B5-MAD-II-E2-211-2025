@@ -25,14 +25,18 @@ class SplashScreen extends StatelessWidget {
   Widget _getStart(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-        onPressed: () {
-          Navigator.of(context).pushReplacementNamed(AppRoute.loginScreen);
-        },
-        child: Text(
-          "Get start",
-          style: TextStyle(fontSize: 16, color: Colors.white),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: 40,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed(AppRoute.loginScreen);
+          },
+          child: Text(
+            "Get start",
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
         ),
       ),
     );
