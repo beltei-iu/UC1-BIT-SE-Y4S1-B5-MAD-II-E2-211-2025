@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mad_2_211/model/order.dart';
 import 'package:mad_2_211/screens/custom_search_delegate.dart';
 import 'package:mad_2_211/services/order_service.dart';
 
@@ -10,6 +11,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+
+  final orderService = OrderService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,9 +30,11 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
+
+
       body: FutureBuilder(
-        future: OrderService.getOrder(),
-        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        future: orderService.getOrder(),
+        builder: (BuildContext context, AsyncSnapshot<List<Order>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -36,16 +42,17 @@ class _CartScreenState extends State<CartScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text("No favorite items found."));
           } else {
-            List<String> orders = snapshot.data!;
+            List<Order> orders = snapshot.data!;
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {
-                String order = orders[index];
-                final orderDetails = order.split(',');
-                String productId = orderDetails[0].split('=')[1];
-                String price = orderDetails[1].split('=')[1];
-                String qty = orderDetails[2].split('=')[1];
-                String discount = orderDetails[3].split('=')[1];
+
+                Order order = orders[index];
+                // final orderDetails = order.split(',');
+                // String productId = orderDetails[0].split('=')[1];
+                // String price = orderDetails[1].split('=')[1];
+                // String qty = orderDetails[2].split('=')[1];
+                // String discount = orderDetails[3].split('=')[1];
 
                 return Card(
                   elevation: 4,
@@ -56,7 +63,7 @@ class _CartScreenState extends State<CartScreen> {
                       fit: BoxFit.cover,
                     ),
                     title: Text(
-                      "$productId - Price: $price, Qty: $qty, Discount: $discount",
+                      "${order.productId} - Price: ${order.price}, Qty: ${order.quantity}, Discount: ${order.price}",
                     ),
                     trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),
                   ),

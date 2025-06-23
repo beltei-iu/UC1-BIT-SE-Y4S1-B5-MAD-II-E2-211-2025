@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
+import 'package:mad_2_211/model/order.dart';
+import 'package:mad_2_211/provider/cart_provider.dart';
 import 'package:mad_2_211/screens/custom_search_delegate.dart';
 import 'package:mad_2_211/services/category_service.dart';
 import 'package:mad_2_211/services/order_service.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
 
 import '../model/category.dart' show Category;
 
@@ -19,10 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalOrder = 0;
   List<Category> categories = [];
 
+  final orderService = OrderService();
+
   void initState() {
     super.initState();
     _fetchFullName();
-    _loadOrder();
     _loadCategoryMenu();
   }
 
@@ -36,11 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadOrder() async {
-    OrderService.getOrder().then((value) {
-      setState(() {
-        _totalOrder = value.length;
-      });
-    });
+    // final cartProvider = Provider.of<CartProvider>(context, listen: true);
+    // setState(() {
+    //   _totalOrder = cartProvider.orders.length;
+    // });
+
+    // orderService.getOrder().then((value) {
+    //   print("Total order  : ${value.length}", );
+    //   setState(() {
+    //     _totalOrder = value.length;
+    //   });
+    // });
   }
 
   Future<void> _fetchFullName() async {
@@ -57,6 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // This is where you can fetch the full name from shared preferences
     print("Full Name: $fullName");
+
+    final cartProvider = Provider.of<CartProvider>(context, listen: true);
+
+    setState(() {
+      _totalOrder = cartProvider.orders.length;
+    });
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -93,9 +110,9 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _exploredWidget,
           _buildMenu,
-          // _slideWidget,
+          _slideWidget,
           _topProductsWidget,
-          _topProductsListWidget,
+          _topProductsListWidget(cartProvider),
         ],
       ),
     );
@@ -144,12 +161,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget get _slideWidget {
-    return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 16),
-      child: Image.asset(
-        'assets/images/HQ.png',
-        height: 200,
-        fit: BoxFit.cover,
+    // return Padding(
+    //   padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+    //   child: Image.asset(
+    //     'assets/images/HQ.png',
+    //     height: 200,
+    //     fit: BoxFit.cover,
+    //   ),
+    // );
+    return SizedBox(
+      height: 180,
+      child: CarouselView(
+        scrollDirection: Axis.horizontal,
+        itemExtent: double.infinity,
+        children: List<Widget>.generate(10, (int index) {
+          return Image.asset(
+            'assets/images/HQ.png',
+            height: 200,
+            fit: BoxFit.cover,
+          );
+        }),
       ),
     );
   }
@@ -170,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget get _topProductsListWidget {
+  Widget _topProductsListWidget(CartProvider cartProvider) {
     final cardProducts = List.generate(10, (index) {
       return Padding(
         padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -224,8 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
+                              final order = Order(productId: index, price: 200, quantity: 1);
+                              // orderService.insertOrder(order);
+                              cartProvider.addOrder(order);
 
-                              OrderService.order(index, 1, 12, 10);
                               final alert = AlertDialog(
                                 title: Text("Order Placed"),
                                 content: Text(

@@ -10,7 +10,6 @@ import 'package:mad_2_211/screens/splash_screen.dart';
 
 class AppRoute {
 
-
   static const String splashScreen = "";
   static const String loginScreen = "/loginScreen";
   static const String registerScreen = "/registerScreen";

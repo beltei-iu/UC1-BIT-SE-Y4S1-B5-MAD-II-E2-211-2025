@@ -1,6 +1,9 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DbManager {
 
@@ -36,7 +39,14 @@ class DbManager {
       // Get Path
       // final path = '$dbPath/$dbName';
       final path = join(dbPath, dbName);
-      return await openDatabase(path, version: 1, onCreate: initTable);
+      if(kIsWeb){
+        var databaseFactory = databaseFactoryFfi;
+        final appDocumentsDir = await getApplicationDocumentsDirectory();
+        //String dbPath = join(appDocumentsDir.path, "databases", "myDb.db");
+        return await databaseFactory.openDatabase(dbPath,);
+      }else{
+        return await openDatabase(path, version: 1, onCreate: initTable);
+      }
   }
 
   Future initTable(Database db, int version) async{
