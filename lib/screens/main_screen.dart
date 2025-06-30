@@ -4,6 +4,7 @@ import 'package:mad_2_211/screens/account_screen.dart';
 import 'package:mad_2_211/screens/cart_screen.dart';
 import 'package:mad_2_211/screens/favorite_screen.dart';
 import 'package:mad_2_211/screens/home_screen.dart';
+import 'package:mad_2_211/screens/more_screen.dart';
 
 class MainScreen extends StatefulWidget {
 
@@ -21,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     FavoriteScreen(),
     CartScreen(),
-    AccountScreen()
+    MoreScreen()
   ];
 
   int _selectedIndex = 0;
@@ -50,7 +51,7 @@ class _MainScreenState extends State<MainScreen> {
       BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.red,), label: "Home"),
       BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.red), label: "Favorite"),
       BottomNavigationBarItem(icon: Icon(Icons.shopping_cart, color: Colors.red), label: "Cart"),
-      BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.red), label: "Account"),
+      BottomNavigationBarItem(icon: Icon(Icons.more_vert, color: Colors.red), label: "More"),
     ];
 
     return BottomNavigationBar(

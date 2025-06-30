@@ -13,6 +13,7 @@ class DbManager {
   static const String PRODUCT_TABLE_NAME = "tbl_product";
   static const String CATEGORY_TABLE_NAME = "tbl_category";
   static const String ORDER_TABLE_NAME = "tbl_order";
+  static const String FAVOURITE_TABLE_NAME = "tbl_favourite";
 
   // COLUMN
   static const String PRODUCT_ID = "id";
@@ -28,6 +29,15 @@ class DbManager {
   static const String ORDER_PRODUCT_ID = "product_id";
   static const String ORDER_QUANTITY = "quantity";
   static const String ORDER_PRICE = "price";
+
+  static const String FAVOURITE_ID = "id";
+  static const String FAVOURITE_PRODUCT_ID = "product_id";
+  static const String FAVOURITE_USER_ID = "user_id";
+
+  String idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+  String textType = 'TEXT NOT NULL';
+  String integerType = 'INTEGER NOT NULL';
+  String doubleType = 'DOUBLE NOT NULL';
 
   // Create Singlon Pattern
   static DbManager? instance = DbManager._init();
@@ -50,11 +60,13 @@ class DbManager {
   }
 
   Future initTable(Database db, int version) async{
-    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    const textType = 'TEXT NOT NULL';
-    const integerType = 'INTEGER NOT NULL';
-    const doubleType = 'DOUBLE NOT NULL';
+    initTableProduct(db);
+    initTableCategory(db);
+    initTableOrder(db);
+    initTableFavorite(db);
+  }
 
+  void initTableProduct(Database db) async{
     String productSql = ''' 
       CREATE TABLE IF NOT EXISTS $PRODUCT_TABLE_NAME (
       id $idType,
@@ -66,7 +78,9 @@ class DbManager {
       )
     ''';
     await db.execute(productSql);
+  }
 
+  void initTableCategory(Database db) async{
     String categorySql = ''' 
       CREATE TABLE $CATEGORY_TABLE_NAME (
       id $idType,
@@ -75,7 +89,9 @@ class DbManager {
       )
     ''';
     await db.execute(categorySql);
+  }
 
+  void initTableOrder(Database db) async{
     String orderSql = ''' 
       CREATE TABLE IF NOT EXISTS $ORDER_TABLE_NAME (
       id $idType,
@@ -85,5 +101,17 @@ class DbManager {
       )
     ''';
     await db.execute(orderSql);
+  }
+
+  void initTableFavorite(Database db) async{
+    String favoriteSql = ''' 
+      CREATE TABLE IF NOT EXISTS $FAVOURITE_TABLE_NAME (
+      id $idType,
+      productId $integerType,
+      quantity $integerType,
+      price $doubleType
+      )
+    ''';
+    await db.execute(favoriteSql);
   }
 }

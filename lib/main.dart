@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:mad_2_211/controllers/theme_controller.dart';
 import 'package:mad_2_211/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -20,6 +22,8 @@ import 'data/db_manager.dart';
 void main() async{
   // This is the entry point of the application.
   WidgetsFlutterBinding.ensureInitialized();
+  // Load Storage
+  await GetStorage.init();
 
   // Init DB
   if(Platform.isWindows){
@@ -67,19 +71,25 @@ Future<void> loadFile() async {
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+
+  final ThemeController  themeController = Get.put(ThemeController());
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'MAD-II-211',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-      ),
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+      // ),
       // initialRoute: AppRoute.splashScreen,
       onGenerateRoute: AppRoute.onGenerateRoute,
       navigatorKey: AppRoute.key,
       home: SplashScreen(),
+
+      // Theme
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeController.theme,
     );
   }
 }
