@@ -32,16 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _appBar,
       body: _body,
-    );
-  }
-
-  PreferredSizeWidget get _appBar {
-    return AppBar(
-      //title: const Text('Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
-      centerTitle: true,
-      backgroundColor: Colors.white,
     );
   }
 

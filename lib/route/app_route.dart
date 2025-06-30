@@ -5,6 +5,7 @@ import 'package:mad_2_211/screens/login_screen.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
 import 'package:mad_2_211/screens/otp_screen.dart';
 import 'package:mad_2_211/screens/phone_screen.dart';
+import 'package:mad_2_211/screens/product_detail_screen.dart';
 import 'package:mad_2_211/screens/register_screen.dart';
 import 'package:mad_2_211/screens/splash_screen.dart';
 
@@ -16,6 +17,7 @@ class AppRoute {
   static const String mainScreen = "/mainScreen";
   static const String phoneScreen = "/phoneScreen";
   static const String otpScreen = "/otpScreen";
+  static const String productDetailScreen = "/productDetailScreen";
 
  static final key = GlobalKey<NavigatorState>();
 
@@ -34,6 +36,8 @@ class AppRoute {
         return _buildRoute(routeSettings, PhoneScreen());
       case otpScreen:
         return _buildRoute(routeSettings, OtpScreen());
+      case productDetailScreen:
+        return _buildRoute(routeSettings, ProductDetailScreen());
       default:
          throw RouteException("Route not found.");
     }

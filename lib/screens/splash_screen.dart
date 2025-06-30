@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:mad_2_211/route/app_route.dart';
+import 'package:mad_2_211/screens/main_screen.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -14,7 +16,12 @@ class SplashScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: LogoWidget()),
+          Expanded(
+            child: AnimatedContainer(
+              duration: Duration(seconds: 1),
+              child: LogoWidget(),
+            ),
+          ),
           _getStart(context),
           _getGuest(context),
         ],
@@ -51,7 +58,9 @@ class SplashScreen extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
           onPressed: () {
-            Navigator.of(context).pushReplacementNamed(AppRoute.mainScreen);
+            // Route to Main Screen
+            Get.off(MainScreen());
+            //Navigator.of(context).pushReplacementNamed(AppRoute.mainScreen);
           },
           child: Text(
             "Continue as Guest",

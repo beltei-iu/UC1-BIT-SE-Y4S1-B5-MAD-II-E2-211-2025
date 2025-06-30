@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mad_2_211/controllers/cart_controller.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/model/order.dart';
 import 'package:mad_2_211/provider/cart_provider.dart';
@@ -63,17 +65,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  final cartController = Get.put(CartController());
+
   @override
   Widget build(BuildContext context) {
     // This is where you can fetch the full name from shared preferences
     print("Full Name: $fullName");
 
-    final cartProvider = Provider.of<CartProvider>(context, listen: true);
+    // final cartProvider = Provider.of<CartProvider>(context, listen: true);
 
+    List<Order> orders = cartController.orders;
     setState(() {
-      _totalOrder = cartProvider.orders.length;
+      _totalOrder = orders.length;
     });
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -108,11 +112,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: ListView(
         children: [
-          _exploredWidget,
+          // _exploredWidget,
           _buildMenu,
           _slideWidget,
           _topProductsWidget,
-          _topProductsListWidget(cartProvider),
+          _topProductsListWidget(),
         ],
       ),
     );
@@ -192,125 +196,136 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Top Products",
+            "ផលិតផលថ្មី",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          Icon(Icons.arrow_forward, color: Colors.grey),
+          Row(
+            children: [
+              Text("បន្ថែម"),
+              Icon(Icons.arrow_forward, color: Colors.grey),
+              ]
+          )
         ],
       ),
     );
   }
 
-  Widget _topProductsListWidget(CartProvider cartProvider) {
+  Widget _topProductsListWidget() {
     final cardProducts = List.generate(10, (index) {
-      return Padding(
-        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: 200,
-              height: 310,
-              child: Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Image.asset(
-                      'assets/images/shue1.jpg',
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                    //"Men's New Fashion leather shoes men's large size business suits men's shoes creative trend fashion foreign trade shoes men's singles
-                    Padding(
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      child: Text(
-                        "Men's New Fashion leather shoes men's large size ...",
-                        style: TextStyle(fontSize: 12),
+      return GestureDetector(
+        onTap: (){
+          Navigator.pushNamed(context, '/productDetailScreen');
+        },
+        child: Padding(
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 200,
+                height: 310,
+                child: Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        'assets/images/shue1.jpg',
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "12\$",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.red,
+                      //"Men's New Fashion leather shoes men's large size business suits men's shoes creative trend fashion foreign trade shoes men's singles
+                      Padding(
+                        padding: EdgeInsets.only(left: 8, right: 8),
+                        child: Text(
+                          "Men's New Fashion leather shoes men's large size ...",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 8, right: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "12\$",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.red,
+                              ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.yellow),
-                              Text("4.5", style: TextStyle(fontSize: 14)),
-                            ],
-                          ),
-                        ],
+                            Row(
+                              children: [
+                                Icon(Icons.star, color: Colors.yellow),
+                                Text("4.5", style: TextStyle(fontSize: 14)),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Center(
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              final order = Order(productId: index, price: 200, quantity: 1);
-                              // orderService.insertOrder(order);
-                              cartProvider.addOrder(order);
+                      Center(
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                final order = Order(productId: index, price: 200, quantity: 1);
+                                // orderService.insertOrder(order);
+                                //cartProvider.addOrder(order);
+                                cartController.addOrder(order);
 
-                              final alert = AlertDialog(
-                                title: Text("Order Placed"),
-                                content: Text(
-                                  "Your order for product ID $index has been placed successfully!",
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("OK"),
+                                final alert = AlertDialog(
+                                  title: Text("Order Placed"),
+                                  content: Text(
+                                    "Your order for product ID $index has been placed successfully!",
                                   ),
-                                ],
-                              );
-                              showDialog(
-                                context: context,
-                                builder: (context) => alert,
-                              );
-                            },
-                            child: Padding(
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("OK"),
+                                    ),
+                                  ],
+                                );
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => alert,
+                                );
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 8),
+                                child: Text(
+                                  "+",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: Text("1"),
+                            ),
+                            Padding(
                               padding: EdgeInsets.only(left: 8),
                               child: Text(
-                                "+",
+                                "-",
                                 style: TextStyle(
                                   fontSize: 30,
                                   color: Colors.green,
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 8),
-                            child: Text("1"),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 8),
-                            child: Text(
-                              "-",
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     });

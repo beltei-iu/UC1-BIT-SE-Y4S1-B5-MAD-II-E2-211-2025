@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class FileStorageManager {
-  static const String fileName = 'data.txt';
+  static const String fileName = 'assets/data/data.txt';
 
   static Future<String> _getCurrentPath() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -16,7 +16,7 @@ class FileStorageManager {
 
     File file = File('$directory/$fileName');
     if (!file.existsSync()) {
-      return file.create();
+      return file.create(recursive: true);
     }
     return file;
   }
@@ -24,7 +24,7 @@ class FileStorageManager {
   static Future<void> saveFile(String fileName, String content) async {
     final file = await getFile(fileName);
     if (!file.existsSync()) {
-      await file.create();
+      await file.create(recursive: true);
     }
     await file.writeAsString(content);
   }

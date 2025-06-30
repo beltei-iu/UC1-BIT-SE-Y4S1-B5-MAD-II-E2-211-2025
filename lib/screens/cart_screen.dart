@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mad_2_211/controllers/cart_controller.dart';
 import 'package:mad_2_211/model/order.dart';
 import 'package:mad_2_211/screens/custom_search_delegate.dart';
 import 'package:mad_2_211/services/order_service.dart';
@@ -13,6 +15,8 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
 
   final orderService = OrderService();
+
+  final cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +58,15 @@ class _CartScreenState extends State<CartScreen> {
                 // String qty = orderDetails[2].split('=')[1];
                 // String discount = orderDetails[3].split('=')[1];
 
-                return Card(
+                return Dismissible(
+                    key: ValueKey<int>(order.id!),
+                    // confirmDismiss: (DismissDirection direction){
+                    //
+                    // },
+                    onDismissed: (direction) {
+                        cartController.removeCart(order);
+                    },
+                    child: Card(
                   elevation: 4,
                   child: ListTile(
                     leading: Image.asset(
@@ -67,7 +79,7 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),
                   ),
-                );
+                ));
               },
             );
           }

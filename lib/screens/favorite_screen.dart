@@ -33,7 +33,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           } else {
             List<Order> orders = snapshot.data!;
 
-
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {

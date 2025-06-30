@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:mad_2_211/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -21,10 +22,12 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   // Init DB
-  await DbManager.instance?.database;
-  // sqfliteFfiInit();
-  // var databaseFactory = databaseFactoryFfi;
-
+  if(Platform.isWindows){
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }else{
+    await DbManager.instance?.database;
+  }
 
   // Insert Data
   // List<String> categoryItems = ["Electronics","Toys","Clothes","Shoes","Books"];
@@ -34,17 +37,16 @@ void main() async{
   //   categoryService.insertCategory(category);
   // }
 
-
   // Config Provider
-  final provider = MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => CartProvider()),
-      // Can add other provider
-    ],
-    child: App(),
-  );
+  // final provider = MultiProvider(
+  //   providers: [
+  //     ChangeNotifierProvider(create: (_) => CartProvider()),
+  //     // Can add other provider
+  //   ],
+  //   child: App(),
+  // );
 
-  runApp(provider);
+  runApp(App());
 }
 
 Future<void> readDataFromAsset() async {
@@ -69,14 +71,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'MAD-II-211',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      initialRoute: AppRoute.splashScreen,
+      // initialRoute: AppRoute.splashScreen,
       onGenerateRoute: AppRoute.onGenerateRoute,
       navigatorKey: AppRoute.key,
+      home: SplashScreen(),
     );
   }
 }

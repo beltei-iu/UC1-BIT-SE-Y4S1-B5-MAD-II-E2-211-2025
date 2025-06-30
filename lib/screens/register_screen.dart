@@ -23,15 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _appBar, body: _body);
-  }
-
-  PreferredSizeWidget get _appBar {
-    return AppBar(
-      //title: const Text('Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
-      centerTitle: true,
-      backgroundColor: Colors.white,
-    );
+    return Scaffold( body: _body);
   }
 
   Widget get _body {

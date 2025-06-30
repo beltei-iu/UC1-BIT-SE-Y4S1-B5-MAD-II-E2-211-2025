@@ -41,4 +41,9 @@ class OrderService {
     // Option 2
     // return results.map((e) => Order.fromMap(e)).toList();
   }
+
+  Future<void> deleteOrder(Order order) async{
+    final db = await DbManager.instance!.database;
+    await db.delete(DbManager.ORDER_TABLE_NAME, where: 'id = ?', whereArgs: [order.id]);
+  }
 }
