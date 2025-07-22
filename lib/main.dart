@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mad_2_211/controllers/theme_controller.dart';
+import 'package:mad_2_211/firebase_options.dart';
 import 'package:mad_2_211/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -19,17 +21,21 @@ import 'package:mad_2_211/services/category_service.dart';
 
 import 'data/db_manager.dart';
 
-void main() async{
+void main() async {
   // This is the entry point of the application.
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   // Load Storage
   await GetStorage.init();
 
   // Init DB
-  if(Platform.isWindows){
+  if (Platform.isWindows) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
-  }else{
+  } else {
     await DbManager.instance?.database;
   }
 
@@ -71,17 +77,12 @@ Future<void> loadFile() async {
 }
 
 class App extends StatelessWidget {
-
-  final ThemeController  themeController = Get.put(ThemeController());
+  final ThemeController themeController = Get.put(ThemeController());
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'MAD-II-211',
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-      // ),
-      // initialRoute: AppRoute.splashScreen,
       onGenerateRoute: AppRoute.onGenerateRoute,
       navigatorKey: AppRoute.key,
       home: SplashScreen(),

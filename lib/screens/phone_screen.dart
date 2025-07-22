@@ -1,4 +1,4 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
 
@@ -10,9 +10,9 @@ class PhoneScreen extends StatefulWidget {
 }
 
 class _PhoneScreenState extends State<PhoneScreen> {
-
-
   final TextEditingController _phoneController = TextEditingController();
+
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,10 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   PreferredSizeWidget get _appBar {
     return AppBar(
-      title: const Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+      title: const Text(
+        'Phone Number',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+      ),
       centerTitle: true,
       backgroundColor: Colors.white,
     );
@@ -52,9 +55,6 @@ class _PhoneScreenState extends State<PhoneScreen> {
           const SizedBox(height: 40),
         ],
       ),
-    );  
+    );
   }
-
-
-
 }

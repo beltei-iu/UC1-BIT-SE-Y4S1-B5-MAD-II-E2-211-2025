@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/route/app_route.dart';
+import 'package:mad_2_211/screens/main_screen.dart';
+import 'package:mad_2_211/screens/phone_screen.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
 import 'package:mad_2_211/widgets/social_login_widget.dart';
 
@@ -21,9 +25,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold( body: _body);
+    return Scaffold(body: _body);
   }
 
   Widget get _body {
@@ -170,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _registerHandler() {
+  Future<void> _registerHandler() async {
     // email : mad@gmail.com
     // pass  : 123456
     String username = _usernameController.text;
@@ -190,8 +196,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
       print('Username: $username');
       print('Password: $password');
 
-      UserSharedPreference.register(fullName, username, password);
-      AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+      try {
+        UserCredential userCredential = await _auth
+            .createUserWithEmailAndPassword(
+              email: username,
+              password: password,
+            );
+        print("User created: ${userCredential.user?.email}");
+
+        UserSharedPreference.register(fullName, username, password);
+        //AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+        Get.to(PhoneScreen());
+      } catch (e) {
+        print("Error: $e");
+        final alertDialog = AlertDialog(
+          title: Icon(Icons.error, color: Colors.red, size: 80),
+          content: Text("Login failed: $e"),
+        );
+        showDialog(context: context, builder: (context) => alertDialog);
+      }
     } else {
       final alertDialog = AlertDialog(
         title: Icon(Icons.error, color: Colors.red, size: 80),

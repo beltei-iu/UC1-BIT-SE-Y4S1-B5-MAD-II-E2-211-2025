@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/route/app_route.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
@@ -19,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _loginFormKey = GlobalKey<FormState>();
 
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     ElevatedButton(
@@ -30,10 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Text('Submit'),
     );
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _body,
-    );
+    return Scaffold(backgroundColor: Colors.white, body: _body);
   }
 
   Widget get _body {
@@ -132,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() {
+  Future<void> _login() async {
     // email : mad@gmail.com
     // pass  : 123456
     String username = _usernameController.text;
@@ -165,8 +166,25 @@ class _LoginScreenState extends State<LoginScreen> {
       //   showDialog(context: context, builder: (context) => alertDialog);
       // }
 
-      UserSharedPreference.login(username, password);
-      AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+      // Call Firebase Auth
+      try {
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: username,
+          password: password,
+        );
+        print("User created: ${userCredential.user?.email}");
+
+        UserSharedPreference.login(username, password);
+        //AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+        Get.to(MainScreen());
+      } catch (e) {
+        print("Error: $e");
+        final alertDialog = AlertDialog(
+          title: Icon(Icons.error, color: Colors.red, size: 80),
+          content: Text("Login failed: $e"),
+        );
+        showDialog(context: context, builder: (context) => alertDialog);
+      }
     }
   }
 
