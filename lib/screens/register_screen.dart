@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/route/app_route.dart';
+import 'package:mad_2_211/screens/login_screen.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
 import 'package:mad_2_211/widgets/social_login_widget.dart';
 
@@ -21,9 +25,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold( body: _body);
+    return Scaffold(body: _body);
   }
 
   Widget get _body {
@@ -145,7 +151,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         onPressed: () {
-          _registerHandler();
+          if (_resgisterFormKey.currentState?.validate() == true) {
+            _registerHandler();
+          }
         },
         child: const Text(
           'Resgister',
@@ -170,35 +178,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _registerHandler() {
-    // email : mad@gmail.com
-    // pass  : 123456
-    String username = _usernameController.text;
+  Future<void> _registerHandler() async {
+    String email = _usernameController.text;
     String password = _passwordController.text;
-
-    print('Username: $username');
+    print('Email: $email');
     print('Password: $password');
 
-    if (_resgisterFormKey.currentState?.validate() == true) {
-      // Process call API to backend
-
-      String fullName = _fullNameController.text;
-      String username = _usernameController.text;
-      String password = _passwordController.text;
-
-      print('Full Name: $fullName');
-      print('Username: $username');
-      print('Password: $password');
-
-      UserSharedPreference.register(fullName, username, password);
-      AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
-    } else {
-      final alertDialog = AlertDialog(
-        title: Icon(Icons.error, color: Colors.red, size: 80),
-        content: Text("Please fill all fields correctly"),
+    try {
+      await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((UserCredential user) {
+            print("User : $user");
+            Get.to(LoginScreen());
+          })
+          .catchError((error) {
+            print("Error catchError : $error");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                backgroundColor: Colors.red,
+              ),
+            );
+          });
+    } catch (error) {
+      print("Error catch : $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString()), backgroundColor: Colors.red),
       );
-      showDialog(context: context, builder: (context) => alertDialog);
     }
+    // if (_resgisterFormKey.currentState?.validate() == true) {
+    //   // Process call API to backend
+    //
+    //   String fullName = _fullNameController.text;
+    //   String username = _usernameController.text;
+    //   String password = _passwordController.text;
+    //
+    //   print('Full Name: $fullName');
+    //   print('Username: $username');
+    //   print('Password: $password');
+    //
+    //   UserSharedPreference.register(fullName, username, password);
+    //   AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+    // } else {
+    //   final alertDialog = AlertDialog(
+    //     title: Icon(Icons.error, color: Colors.red, size: 80),
+    //     content: Text("Please fill all fields correctly"),
+    //   );
+    //   showDialog(context: context, builder: (context) => alertDialog);
+    // }
 
     // if (username.isEmpty) {
     //   final alertDialog = AlertDialog(

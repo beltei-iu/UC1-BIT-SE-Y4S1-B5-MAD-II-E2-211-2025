@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mad_2_211/model/order.dart';
 import 'package:mad_2_211/services/order_service.dart';
 
@@ -17,7 +18,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Favorite"),
+        title: Text("favorite".tr),
         centerTitle: true,
         backgroundColor: Colors.red,
       ),

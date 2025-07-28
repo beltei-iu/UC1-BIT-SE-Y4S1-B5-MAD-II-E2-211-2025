@@ -22,7 +22,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cart"),
+        title: Text("cart".tr),
         centerTitle: true,
         backgroundColor: Colors.red,
         actions: [

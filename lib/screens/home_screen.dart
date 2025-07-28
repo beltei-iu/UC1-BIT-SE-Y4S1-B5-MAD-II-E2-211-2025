@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mad_2_211/controllers/cart_controller.dart';
@@ -23,15 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String fullName = "Guest";
   int _totalOrder = 0;
   List<Category> categories = [];
-
   final orderService = OrderService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void initState() {
     super.initState();
     _fetchFullName();
     _loadCategoryMenu();
   }
-
 
   Future<void> _loadCategoryMenu() async {
     final categoryService = CategoryService();
@@ -56,8 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchFullName() async {
-    String? name = await UserSharedPreference.getUserData("fullName");
+    //String? name = await UserSharedPreference.getUserData("fullName");
 
+    String? name = await _auth.currentUser?.email;
     if (name != null) {
       setState(() {
         fullName = name;
@@ -112,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: ListView(
         children: [
-          // _exploredWidget,
+          _exploredWidget,
           _buildMenu,
           _slideWidget,
           _topProductsWidget,
@@ -129,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Hi, $fullName",
+            "hi".tr + " " + fullName,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ],
@@ -138,31 +139,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget get _buildMenu {
-
-    List<Widget> menuList = categories.map((i)  {
-      return TextButton(onPressed: (){}, child: Text("${i.name}"));
-    }).toList();
+    List<Widget> menuList =
+        categories.map((i) {
+          return TextButton(onPressed: () {}, child: Text("${i.name}"));
+        }).toList();
 
     // Option1
     Widget option1 = SizedBox(
       height: 50,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: menuList,
-      ),
+      child: ListView(scrollDirection: Axis.horizontal, children: menuList),
     );
 
     // Option2
     Widget option2 = SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: menuList,
-      ),
+      child: Row(children: menuList),
     );
 
     return option2;
   }
-
 
   Widget get _slideWidget {
     // return Padding(
@@ -203,8 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text("បន្ថែម"),
               Icon(Icons.arrow_forward, color: Colors.grey),
-              ]
-          )
+            ],
+          ),
         ],
       ),
     );
@@ -213,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _topProductsListWidget() {
     final cardProducts = List.generate(10, (index) {
       return GestureDetector(
-        onTap: (){
+        onTap: () {
           Navigator.pushNamed(context, '/productDetailScreen');
         },
         child: Padding(
@@ -268,7 +263,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                final order = Order(productId: index, price: 200, quantity: 1);
+                                final order = Order(
+                                  productId: index,
+                                  price: 200,
+                                  quantity: 1,
+                                );
                                 // orderService.insertOrder(order);
                                 //cartProvider.addOrder(order);
                                 cartController.addOrder(order);

@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/route/app_route.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
+import 'package:mad_2_211/widgets/snackbar_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,26 +18,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _isObscure = true;
   bool _isValidEmail = false;
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   final _loginFormKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
-    ElevatedButton(
-      onPressed: () {
-        if (_loginFormKey.currentState!.validate()) {
-          // All fields are valid, proceed with data submission
-        }
-      },
-      child: Text('Submit'),
-    );
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _body,
-    );
+    return Scaffold(backgroundColor: Colors.white, body: _body);
   }
 
   Widget get _body {
@@ -49,13 +41,20 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          _username,
-          const SizedBox(height: 20),
-          _password,
-          const SizedBox(height: 10),
-          _forgotPassword,
-          const SizedBox(height: 40),
-          _loginButton,
+          Form(
+            key: _loginFormKey,
+            child: Column(
+              children: [
+                _email,
+                const SizedBox(height: 20),
+                _password,
+                const SizedBox(height: 10),
+                _forgotPassword,
+                const SizedBox(height: 40),
+                _loginButton,
+              ],
+            ),
+          ),
           const SizedBox(height: 40),
           const Text('Or login with'),
           _socialLogin,
@@ -66,9 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget get _username {
-    return TextField(
-      controller: _usernameController,
+  Widget get _email {
+    return TextFormField(
+      controller: _emailController,
       onChanged: (value) {
         print("Value $value");
         if (value.contains("@")) {
@@ -76,6 +75,12 @@ class _LoginScreenState extends State<LoginScreen> {
             _isValidEmail = true;
           });
         }
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        return null;
       },
       decoration: InputDecoration(
         prefix: Icon(Icons.person),
@@ -90,9 +95,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget get _password {
-    return TextField(
+    return TextFormField(
       controller: _passwordController,
       obscureText: _isObscure,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         prefix: Icon(Icons.lock),
         labelText: 'Password',
@@ -122,7 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         onPressed: () {
-          _login();
+          if (_loginFormKey.currentState!.validate()) {
+            _login();
+          }
         },
         child: const Text(
           'Login',
@@ -132,99 +145,115 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() {
-    // email : mad@gmail.com
-    // pass  : 123456
-    String username = _usernameController.text;
+  void _login() async {
+    String email = _emailController.text;
     String password = _passwordController.text;
-
-    print('Username: $username');
+    print('email: $email');
     print('Password: $password');
 
-    if (username.isEmpty) {
-      final alertDialog = AlertDialog(
-        title: Icon(Icons.error, color: Colors.red, size: 80),
-        content: Text("Email is invalid"),
-      );
-      showDialog(context: context, builder: (context) => alertDialog);
-    } else if (password.isEmpty) {
-      final alertDialog = AlertDialog(
-        title: Icon(Icons.error, color: Colors.red, size: 80),
-        content: Text("Password is invalid"),
-      );
-      showDialog(context: context, builder: (context) => alertDialog);
-    } else {
-      // Call to Server
-      // if (username == "mad@gmail.com" && password == "123456") {
-      //   AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
-      // } else {
-      //   final alertDialog = AlertDialog(
-      //     title: Icon(Icons.error, color: Colors.red, size: 80),
-      //     content: Text("Wrong email and password"),
-      //   );
-      //   showDialog(context: context, builder: (context) => alertDialog);
-      // }
-
-      UserSharedPreference.login(username, password);
-      AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
-    }
-  }
-
-  Widget get _forgotPassword {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton(
-          onPressed: () {
-            AppRoute.key.currentState?.pushNamed(AppRoute.phoneScreen);
-          },
-          child: const Text(
-            'Forgot Password?',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget get _socialLogin {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () {
-            // Handle Google login
-          },
-          icon: Image.asset('assets/images/google.png', width: 30, height: 30),
-        ),
-        IconButton(
-          onPressed: () {
-            // Handle Facebook login
-          },
-          icon: Image.asset(
-            'assets/images/facebook.png',
-            width: 30,
-            height: 30,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget get _navigateToRegister {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text('Don\'t have an account?'),
-        TextButton(
-          onPressed: () {
-            AppRoute.key.currentState?.pushReplacementNamed(
-              AppRoute.registerScreen,
+    try {
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((UserCredential user) {
+            print("User : $user");
+            Get.off(MainScreen());
+          })
+          .catchError((error) {
+            print("Error catchError : $error");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                backgroundColor: Colors.red,
+              ),
             );
-          },
-          child: const Text('Register', style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    );
+          });
+    } catch (error) {
+      print("Error catch : $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString()), backgroundColor: Colors.red),
+      );
+    }
+
+    //
+    // if (username.isEmpty) {
+    //   final alertDialog = AlertDialog(
+    //     title: Icon(Icons.error, color: Colors.red, size: 80),
+    //     content: Text("Email is invalid"),
+    //   );
+    //   showDialog(context: context, builder: (context) => alertDialog);
+    // } else if (password.isEmpty) {
+    //   final alertDialog = AlertDialog(
+    //     title: Icon(Icons.error, color: Colors.red, size: 80),
+    //     content: Text("Password is invalid"),
+    //   );
+    //   showDialog(context: context, builder: (context) => alertDialog);
+    // } else {
+    //   // Call to Server
+    //   // if (username == "mad@gmail.com" && password == "123456") {
+    //   //   AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
+    //   // } else {
+    //   //   final alertDialog = AlertDialog(
+    //   //     title: Icon(Icons.error, color: Colors.red, size: 80),
+    //   //     content: Text("Wrong email and password"),
+    //   //   );
+    //   //   showDialog(context: context, builder: (context) => alertDialog);
+    //   // }
+    //
+    //   UserSharedPreference.login(username, password);
+    //   AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
   }
+}
+
+Widget get _forgotPassword {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      TextButton(
+        onPressed: () {
+          AppRoute.key.currentState?.pushNamed(AppRoute.phoneScreen);
+        },
+        child: const Text(
+          'Forgot Password?',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget get _socialLogin {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      IconButton(
+        onPressed: () {
+          // Handle Google login
+        },
+        icon: Image.asset('assets/images/google.png', width: 30, height: 30),
+      ),
+      IconButton(
+        onPressed: () {
+          // Handle Facebook login
+        },
+        icon: Image.asset('assets/images/facebook.png', width: 30, height: 30),
+      ),
+    ],
+  );
+}
+
+Widget get _navigateToRegister {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      const Text('Don\'t have an account?'),
+      TextButton(
+        onPressed: () {
+          AppRoute.key.currentState?.pushReplacementNamed(
+            AppRoute.registerScreen,
+          );
+        },
+        child: const Text('Register', style: TextStyle(color: Colors.red)),
+      ),
+    ],
+  );
 }
