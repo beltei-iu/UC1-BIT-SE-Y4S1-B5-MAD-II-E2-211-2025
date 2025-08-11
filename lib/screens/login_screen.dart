@@ -1,12 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/route/app_route.dart';
-import 'package:mad_2_211/screens/main_screen.dart';
+import 'package:mad_2_211/services/facebook_service.dart';
+import 'package:mad_2_211/services/firebase_auth_service.dart';
+import 'package:mad_2_211/services/google_service.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
-import 'package:mad_2_211/widgets/snackbar_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,7 +18,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _loginFormKey = GlobalKey<FormState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +135,12 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         onPressed: () {
           if (_loginFormKey.currentState!.validate()) {
-            _login();
+            String email = _emailController.text;
+            String password = _passwordController.text;
+            FirebaseAuthService.instance.signInFirebaseWithEmailAndPassword(
+              email,
+              password,
+            );
           }
         },
         child: const Text(
@@ -145,115 +151,61 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() async {
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    print('email: $email');
-    print('Password: $password');
-
-    try {
-      await _auth
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((UserCredential user) {
-            print("User : $user");
-            Get.off(MainScreen());
-          })
-          .catchError((error) {
-            print("Error catchError : $error");
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error.toString()),
-                backgroundColor: Colors.red,
-              ),
-            );
-          });
-    } catch (error) {
-      print("Error catch : $error");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString()), backgroundColor: Colors.red),
-      );
-    }
-
-    //
-    // if (username.isEmpty) {
-    //   final alertDialog = AlertDialog(
-    //     title: Icon(Icons.error, color: Colors.red, size: 80),
-    //     content: Text("Email is invalid"),
-    //   );
-    //   showDialog(context: context, builder: (context) => alertDialog);
-    // } else if (password.isEmpty) {
-    //   final alertDialog = AlertDialog(
-    //     title: Icon(Icons.error, color: Colors.red, size: 80),
-    //     content: Text("Password is invalid"),
-    //   );
-    //   showDialog(context: context, builder: (context) => alertDialog);
-    // } else {
-    //   // Call to Server
-    //   // if (username == "mad@gmail.com" && password == "123456") {
-    //   //   AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
-    //   // } else {
-    //   //   final alertDialog = AlertDialog(
-    //   //     title: Icon(Icons.error, color: Colors.red, size: 80),
-    //   //     content: Text("Wrong email and password"),
-    //   //   );
-    //   //   showDialog(context: context, builder: (context) => alertDialog);
-    //   // }
-    //
-    //   UserSharedPreference.login(username, password);
-    //   AppRoute.key.currentState?.pushNamed(AppRoute.mainScreen);
-  }
-}
-
-Widget get _forgotPassword {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: [
-      TextButton(
-        onPressed: () {
-          AppRoute.key.currentState?.pushNamed(AppRoute.phoneScreen);
-        },
-        child: const Text(
-          'Forgot Password?',
-          style: TextStyle(color: Colors.red),
+  Widget get _forgotPassword {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: () {
+            AppRoute.key.currentState?.pushNamed(AppRoute.phoneScreen);
+          },
+          child: const Text(
+            'Forgot Password?',
+            style: TextStyle(color: Colors.red),
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
-Widget get _socialLogin {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      IconButton(
-        onPressed: () {
-          // Handle Google login
-        },
-        icon: Image.asset('assets/images/google.png', width: 30, height: 30),
-      ),
-      IconButton(
-        onPressed: () {
-          // Handle Facebook login
-        },
-        icon: Image.asset('assets/images/facebook.png', width: 30, height: 30),
-      ),
-    ],
-  );
-}
+  Widget get _socialLogin {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: () {
+            GoogleService.instance.signInWithGoogle();
+          },
+          icon: Image.asset('assets/images/google.png', width: 30, height: 30),
+        ),
+        IconButton(
+          onPressed: () {
+            FacebookService.instance.signInWithFacebook();
+          },
+          icon: Image.asset(
+            'assets/images/facebook.png',
+            width: 30,
+            height: 30,
+          ),
+        ),
+      ],
+    );
+  }
 
-Widget get _navigateToRegister {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      const Text('Don\'t have an account?'),
-      TextButton(
-        onPressed: () {
-          AppRoute.key.currentState?.pushReplacementNamed(
-            AppRoute.registerScreen,
-          );
-        },
-        child: const Text('Register', style: TextStyle(color: Colors.red)),
-      ),
-    ],
-  );
+  Widget get _navigateToRegister {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Don\'t have an account?'),
+        TextButton(
+          onPressed: () {
+            AppRoute.key.currentState?.pushReplacementNamed(
+              AppRoute.registerScreen,
+            );
+          },
+          child: const Text('Register', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    );
+  }
 }

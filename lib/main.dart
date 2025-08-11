@@ -10,7 +10,6 @@ import 'package:mad_2_211/route/app_route.dart';
 import 'package:mad_2_211/screens/splash_screen.dart';
 import 'package:mad_2_211/translate/Message.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
 import 'data/db_manager.dart';
 
 void main() async {

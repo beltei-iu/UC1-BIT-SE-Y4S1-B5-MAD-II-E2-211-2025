@@ -28,8 +28,10 @@ android {
         applicationId = "kh.edu.beltei.mad211"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23
+        targetSdk = 33
+//        minSdk = flutter.minSdkVersion
+//        targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -46,3 +48,9 @@ android {
 flutter {
     source = "../.."
 }
+
+
+//dependencies {
+//    implementation 'com.google.android.gms:play-services-auth:20.7.0' // Latest version
+//    implementation 'com.google.firebase:firebase-auth:22.3.0' // If using Firebase
+//}
