@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:mad_2_211/route/app_route.dart';
+import 'package:mad_2_211/screens/login_screen.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
+import 'package:mad_2_211/services/facebook_service.dart';
+import 'package:mad_2_211/services/google_service.dart';
 import 'package:mad_2_211/widgets/logo_widget.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -38,7 +41,7 @@ class SplashScreen extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
           onPressed: () {
-            Navigator.of(context).pushReplacementNamed(AppRoute.loginScreen);
+            _navigationGetStart();
           },
           child: Text(
             "Get start",
@@ -69,5 +72,15 @@ class SplashScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _navigationGetStart() async {
+    bool isFacebookLogIn = await FacebookService.instance.isFacebookLoggedIn();
+    bool isGoogleSignIn = await GoogleService.instance.isGoogleSignIn();
+    if (isFacebookLogIn || isGoogleSignIn) {
+      Get.off(MainScreen());
+    } else {
+      Get.off(LoginScreen());
+    }
   }
 }

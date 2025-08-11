@@ -1,6 +1,14 @@
+import 'dart:math';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:get/get.dart';
 import 'package:mad_2_211/data/user_shared_preference.dart';
 import 'package:mad_2_211/route/app_route.dart';
+import 'package:mad_2_211/screens/login_screen.dart';
+import 'package:mad_2_211/services/facebook_service.dart';
+import 'package:mad_2_211/services/google_service.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -12,6 +20,8 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   String fullName = "Guest";
   String? email = "";
+  String? picture;
+  bool _loadingProfile = false;
 
   void initState() {
     super.initState();
@@ -19,12 +29,14 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _fetchFullName() async {
-    String? name = await UserSharedPreference.getUserData("fullName");
-    email = await UserSharedPreference.getUserData("email");
-
-    if (name != null) {
+    final user = await FirebaseAuth.instance.currentUser;
+    print("CurrentUser : $user");
+    if (user != null) {
       setState(() {
-        fullName = name;
+        fullName = user.displayName!;
+        email = user.email;
+        picture = user.photoURL;
+        _loadingProfile = true;
       });
     }
   }
@@ -33,10 +45,17 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Account"),
+        leading: Icon(Icons.navigate_before, color: Colors.white),
+        title: Text("Account", style: TextStyle(color: Colors.white)),
+        elevation: 0.2,
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 2,
+        backgroundColor: Colors.red,
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Icon(Icons.edit, color: Colors.white),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -44,35 +63,45 @@ class _AccountScreenState extends State<AccountScreen> {
             Expanded(
               child: Column(
                 children: [
+                  Padding(padding: EdgeInsets.only(top: 16)),
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage(
-                      'assets/images/user-profile2.jpg',
-                    ),
+                    backgroundImage:
+                        _loadingProfile
+                            ? NetworkImage(picture!)
+                            : AssetImage("assets/images/user-profile.jpg"),
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    "$fullName",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ListTile(
+                    title: Text("Full Name"),
+                    subtitle: Text("$fullName"),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    "$email",
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
-                  SizedBox(height: 20),
+                  Divider(),
+                  ListTile(title: Text("Email"), subtitle: Text("$email")),
+                  Divider(),
                 ],
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                logoutHandler();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // Background color
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+            Padding(
+              padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              child: SizedBox(
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _logoutHandler();
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Logout", style: TextStyle(color: Colors.white)),
+                      Padding(
+                        padding: EdgeInsets.only(left: 8),
+                        child: Icon(Icons.logout, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              child: Text("Logout", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -80,8 +109,9 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  void logoutHandler() {
-    UserSharedPreference.logout();
-    AppRoute.key.currentState?.pushReplacementNamed(AppRoute.splashScreen);
+  Future<void> _logoutHandler() async {
+    await FacebookService.instance.signOutFromFacebook();
+    await GoogleService.instance.signOutFromGoogle();
+    Get.offAll(LoginScreen());
   }
 }

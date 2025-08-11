@@ -2,6 +2,5 @@
 <resources>
     <string name="facebook_app_id">1459140421796695</string>
     <string name="facebook_client_token">42773a5074f4209df0cabee99b70685e</string>
-    <string name="google_maps_api_key">AIzaSyC7zBVe3DmhLcoaTbK0y58wiGXw4LgZuWM</string>
     <string name="default_web_client_id">1027220963414-k0i126g752udt8t51itvedlkj56en4kc.apps.googleusercontent.com</string>
 </resources>

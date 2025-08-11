@@ -26,8 +26,19 @@ class FacebookService {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(credential);
       if (userCredential.user != null) {
+        // Update Profile from Facebook
+        Map<String, dynamic> userData = await _getUserData();
+        String photoURL = userData['picture']['data']['url'];
+        await userCredential.user!.updatePhotoURL(photoURL);
+
         Get.offAll(MainScreen());
+      } else {
+        Get.snackbar("Error", "Something went wrong");
       }
+    } else if (result.status == LoginStatus.cancelled) {
+      Get.snackbar("Error", "Login cancelled");
+    } else {
+      Get.snackbar("Error", "Something went wrong");
     }
   }
 
@@ -36,15 +47,14 @@ class FacebookService {
     await FirebaseAuth.instance.signOut();
   }
 
-  Future<bool> _isFacebookLoggedIn() async {
-    await FacebookAuth.instance.logOut();
+  Future<bool> isFacebookLoggedIn() async {
     final token = await FacebookAuth.instance.accessToken;
     return token != null;
   }
 
   Future<Map<String, dynamic>> _getUserData() async {
     final userData = await FacebookAuth.instance.getUserData(
-      fields: "email,name",
+      fields: "email,name,picture.width(200)",
     );
     return userData;
   }

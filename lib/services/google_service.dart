@@ -12,20 +12,32 @@ class GoogleService {
   GoogleService._init();
 
   Future<void> signInWithGoogle() async {
+    // SignIn Google
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+    // SignIn Auth
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
+    // Create a new credential
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
+
+    // SignIn Firebase
     final UserCredential userCredential = await FirebaseAuth.instance
         .signInWithCredential(credential);
     if (userCredential.user != null) {
       Get.offAll(MainScreen());
     }
+  }
+
+  Future<bool> isGoogleSignIn() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+    return googleAuth?.accessToken != null;
   }
 
   Future<void> signOutFromGoogle() async {
