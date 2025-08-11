@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mad_2_211/screens/login_screen.dart';
 import 'package:mad_2_211/screens/main_screen.dart';
 
 class FirebaseAuthService {
@@ -19,6 +20,29 @@ class FirebaseAuthService {
         .then((UserCredential user) {
           print("User : $user");
           Get.offAll(MainScreen());
+        })
+        .catchError((error) {
+          print("Error catchError : $error");
+          Get.showSnackbar(
+            GetSnackBar(
+              title: "Error",
+              message: error.toString(),
+              icon: const Icon(Icons.refresh),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        });
+  }
+
+  Future<void> createUserFirebaseWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((UserCredential user) {
+          print("User : $user");
+          Get.offAll(LoginScreen());
         })
         .catchError((error) {
           print("Error catchError : $error");
